@@ -37,7 +37,11 @@ fn main() -> Result<()> {
 	#[cfg(test_no_tty)]
 	let cols: u16 = 80;
 	#[cfg(not(test_no_tty))]
-	let (cols, _) = terminal::size()?;
+	let cols: u16 = if std::env::var("TEST_NO_TTY").unwrap_or_default() == "1" {
+		80
+	} else {
+		terminal::size()?.0
+	};
 
 	let width = args.width.unwrap_or(45).min(cols.saturating_sub(5));
 
